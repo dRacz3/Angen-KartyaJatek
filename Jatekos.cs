@@ -60,7 +60,7 @@ namespace Angen
             }
             FokuszaltKartyaIndex %= Kartyak.Count;
             // Átestünk negatív index tartományba.. Azaz a másik oldalon vagyok!
-            if (FokuszaltKartyaIndex == -1)
+            if (FokuszaltKartyaIndex < 0)
             {
                 FokuszaltKartyaIndex = Kartyak.Count - 1;
             }
@@ -102,6 +102,7 @@ namespace Angen
         {
             Console.Write("\nA következő kártya eldobásra került: ");
             Megjelenito.PrintKartya(Kartyak[FokuszaltKartyaIndex]);
+            FokuszaltKartyaIndex = 0;
             Kartyak.RemoveAt(FokuszaltKartyaIndex);
         }
 

@@ -461,6 +461,7 @@ namespace Angen
                         }
                         break;
                     case ConsoleKey.Spacebar:
+                        Megjelenito.AddEvent(String.Format("{0} passzolt..\n", jatekos.Nev));
                         validLepesTortent = true;
                         return false;
                     case ConsoleKey.LeftArrow:
