@@ -15,15 +15,31 @@ namespace Angen
         // Események listája, max 10 darab lehet jelen. Ezeket a header alá rajzolja.
         static private Queue<String> EventQueue { get; set; }
 
+        static public String LogFileNev { get; set; }
+        static private bool LogolasBekapcsolva = false;
+
+        static public void LogolastBekapcsol()
+        {
+            LogolasBekapcsolva = true;
+        }
 
         // Event hozzáadása a listához. Ha túlcsordulna, a legrégebbit kidobja
-        static public void AddEvent(string s)
+        static public void AddEvent(String s)
         {
             if(EventQueue == null) // Lusta inicializalas
             {
                 EventQueue = new Queue<string>();
             }
             EventQueue.Enqueue(s);
+            if(LogolasBekapcsolva)
+            {
+                using (System.IO.StreamWriter file =
+                             new System.IO.StreamWriter(LogFileNev +".txt", true))
+                {
+                    file.WriteLine(s);
+                }
+
+            }
             if (EventQueue.Count == 10)
             {
                 EventQueue.Dequeue();

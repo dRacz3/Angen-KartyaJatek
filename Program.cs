@@ -38,19 +38,38 @@ X    A bankot az egy leosztásban négy ütést nyerő játékos viheti el.
         {
             Console.Clear();
 
-            // Létrehozunk új játékot..
-            Megjelenito.PrintJatekSzabalyok();
-            Megjelenito.Fontos("Üdvözöllek, kezdés előtt add meg a neved kérlek!");
-
-            String nev = Console.ReadLine();
-
-
-            JatekMenet game = new JatekMenet(nev);
-            while(!game.JatekVegetErt)
+            Console.WriteLine("Játszani szeretnél, vagy visszanézni játékot? Játékhoz az Y , visszanézéshez az N gombot");
+            bool jatszaniAkar = UserInteraction.Eldontes(ConsoleKey.Y, ConsoleKey.N);
+            if (jatszaniAkar)
             {
-                game.UjKorKezdese();
-            }
+                Console.WriteLine("Szeretnéd elmenteni a következő játékot? Y/N");
+                bool mentsenE = UserInteraction.Eldontes(ConsoleKey.Y, ConsoleKey.N);
+                if (mentsenE)
+                {
+                    Console.WriteLine("Milyen néven szeretnéd elmenteni a játékot?");
+                    Megjelenito.LogolastBekapcsol();
+                    Megjelenito.LogFileNev = Console.ReadLine();
+                }
 
+                // Létrehozunk új játékot..
+                Megjelenito.PrintJatekSzabalyok();
+                Megjelenito.Fontos("Üdvözöllek, kezdés előtt add meg a neved kérlek!");
+
+                String nev = Console.ReadLine();
+
+
+                JatekMenet game = new JatekMenet(nev);
+                bool vegetErt = false;
+                while (!vegetErt)
+                {
+                    vegetErt = game.UjKorKezdese();
+                }
+                Console.WriteLine("A játék véget ért!");
+            }
+            else
+            {
+                Visszajatszo.VisszaJatszikFajlt();
+            }
             Console.ReadLine();
         }
     }

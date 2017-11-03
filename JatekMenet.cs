@@ -98,7 +98,7 @@ namespace Angen
 
 
         // Új kör esetén sorsolunk ki kezd, majd azután folytatódik tovább a játék
-        public void UjKorKezdese()
+        public bool UjKorKezdese()
         {
             Kezdes();
             int i = rnd.Next(0, 101);
@@ -135,6 +135,7 @@ namespace Angen
             Megjelenito.AddEvent("Kör lezárult! Új kör kezdődik!\n");
             Megjelenito.Fontos("A kör lezárult! Következő kör kezdődik... Kezdéshez nyomj meg egy gombot!");
             Console.ReadKey(true);
+            return JatekVegetErt;
 
         }
 
@@ -158,12 +159,11 @@ namespace Angen
                 // Lapcsere üzemmód..
                 int csereSzam = KerdezdMegHanyLapotSzeretneCserélniAFelhasznalo();
                 CsereljLapot(csereSzam);
-
                 bool felhasznaloHivE = true;
 
                 // 4 kör van...
                 int j = 0;
-                while (j < 4 && !ElfogytakAKartyakEgyikJatekosnak)
+                while (j < 4 && !ElfogytakAKartyakEgyikJatekosnak &&!JatekVegetErt)
                 {
                     Megjelenito.AddEventEsUjrarajzol(String.Format("{0} kihívás! A felhasználó a kihívó-e: {1}\n", j, felhasznaloHivE), Adu);
                     AdutFelütAmigKihivoNemTudRakni(felhasznaloHivE);
@@ -215,8 +215,8 @@ namespace Angen
 
                 bool felhasznaloHivE = false;
                 int j = 0;
-                while (j < 4 && !ElfogytakAKartyakEgyikJatekosnak)
-                {
+                while (j < 4 && !ElfogytakAKartyakEgyikJatekosnak && !JatekVegetErt)
+                { 
                     Megjelenito.AddEventEsUjrarajzol(String.Format("{0}. kihívás! A felhasználó a kihívó-e: {1}\n", j + 1, felhasznaloHivE), Adu);
                     AdutFelütAmigKihivoNemTudRakni(felhasznaloHivE);
                     Trace.WriteLine(String.Format("AI kezdett amúgy.. FelhasználóHívE most? {0}, Kör szám: {1}", Felhasznalo, j));
@@ -225,13 +225,13 @@ namespace Angen
                 }
 
                 // Kiértékelés
-                if (adottKorbenElvittUtesek[AI.Nev] < 1)
+                if (adottKorbenElvittUtesek[AI.Nev] < 2)
                 {
                     eredmeny[Felhasznalo.Nev]++;
                     bank++;
                     Megjelenito.AddEvent("AI nem teljesítette az adott körben előírt ütés számot! Fizet a bankba!\n");
                 }
-                if (adottKorbenElvittUtesek[Felhasznalo.Nev] < 2)
+                if (adottKorbenElvittUtesek[Felhasznalo.Nev] < 1)
                 {
                     eredmeny[AI.Nev]++;
                     bank++;
@@ -259,7 +259,7 @@ namespace Angen
             }
             else if (adottKorbenElvittUtesek[Felhasznalo.Nev] == 4)
             {
-                Megjelenito.AddEvent(String.Format("{0} elvitte a bankot! A bank értéke: {0}\n", Felhasznalo.Nev, bank));
+                Megjelenito.AddEvent(String.Format("{0} elvitte a bankot! A bank értéke: {1}\n", Felhasznalo.Nev, bank));
                 bank = 0;
             }
         }
@@ -380,7 +380,6 @@ namespace Angen
         {
             if (cserelendoLapSzam != 0)
             {
-                int cserekSzama = 1;
                 Kartya ujKartya = Oszto.OsztEgyKartyat();
 
                 String baseState = "Csere szakasz!Választ ki fókuszba a kártyát amit le szeretnél cserélni, majd enterrel cserélj!";
@@ -388,6 +387,7 @@ namespace Angen
                 Felhasznalo.KartyatKap(ujKartya);
                 Megjelenito.AddEvent("Új kártya került felhúzásra " + ujKartya.KartyaNeve() + "\n");
 
+                int cserekSzama = 1; // Már egy lapot felvettünk
                 while (cserekSzama != cserelendoLapSzam)
                 {
                     Megjelenito.Takaritas();
@@ -423,6 +423,7 @@ namespace Angen
                             break;
                     }
                 }
+                Felhasznalo.FokuszaltKartyatEldob();
             }
         }
 
@@ -430,7 +431,7 @@ namespace Angen
         // Játékos kártya kijátszása. figyeli a gomblenyomásokat és hogy valid-e a lépés
         private bool JatszKiKartyat(Jatekos jatekos, bool felhasznaloAKihivo)
         {
-            String baseState = "Kártya kijátszása következik! Navigáció : <- / -> nyilakkal, Enter : kártya bedobása, Space : Passzolás";
+            String baseState = "Kártya kijátszása következik! Navigáció : <- / -> nyilakkal, Enter : kártya bedobása, Space : Passzolás, Escape - Feladás";
             Megjelenito.HeaderMessage = baseState;
             Megjelenito.Takaritas();
             Megjelenito.HeaderRajzolas(Adu);
@@ -468,6 +469,11 @@ namespace Angen
                     case ConsoleKey.RightArrow:
                         Felhasznalo.FokuszaltKartyaSwitch(1);
                         break;
+                    case ConsoleKey.Escape:
+                        Megjelenito.Fontos("Játékos feladta a játékot!");
+                        Megjelenito.AddEvent("Játékos feladta a játékot!\n");
+                        JatekVegetErt = true;
+                        return true;
                     default:
                         break;
                 }
