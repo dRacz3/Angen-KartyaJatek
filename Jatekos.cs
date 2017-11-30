@@ -118,5 +118,10 @@ namespace Angen
             }
             return false;
         }
+
+        public string FokuszaltKartyaNeve()
+        {
+            return Kartyak[FokuszaltKartyaIndex].KartyaNeve();
+        }
     }
 }

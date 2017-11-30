@@ -380,19 +380,16 @@ namespace Angen
         {
             if (cserelendoLapSzam != 0)
             {
-                Kartya ujKartya = Oszto.OsztEgyKartyat();
-
                 String baseState = "Csere szakasz!Választ ki fókuszba a kártyát amit le szeretnél cserélni, majd enterrel cserélj!";
+                Kartya ujKartya = Oszto.OsztEgyKartyat();
                 Megjelenito.HeaderMessage = baseState;
                 Felhasznalo.KartyatKap(ujKartya);
-                Megjelenito.AddEvent("Új kártya került felhúzásra " + ujKartya.KartyaNeve() + "\n");
-
-                int cserekSzama = 1; // Már egy lapot felvettünk
-                while (cserekSzama != cserelendoLapSzam)
+                Megjelenito.AddEvent("Új kártya került felhúzásra " + ujKartya.KartyaNeve() +" " + Felhasznalo.Nev + " által" +"\n");
+                while (cserelendoLapSzam != 0)
                 {
                     Megjelenito.Takaritas();
                     Megjelenito.HeaderRajzolas(Adu);
-                    Console.WriteLine("Hátra lévő cserék száma: {0}", (cserelendoLapSzam - cserekSzama));
+                    Console.WriteLine("Hátra lévő cserék száma: {0}", (cserelendoLapSzam));
                     Felhasznalo.KartyakatMutat();
                     ConsoleKeyInfo keyinfo;
 
@@ -406,6 +403,7 @@ namespace Angen
                             Felhasznalo.FokuszaltKartyaSwitch(1);
                             break;
                         case ConsoleKey.Enter:
+                            Megjelenito.AddEvent(Felhasznalo.Nev +" eldobta:" + Felhasznalo.FokuszaltKartyaNeve());
                             Felhasznalo.FokuszaltKartyatEldob();
                             Console.WriteLine();
                             ujKartya = Oszto.OsztEgyKartyat();
@@ -416,7 +414,7 @@ namespace Angen
                             Console.WriteLine("Nyomj meg egy gombot a folytatáshoz..");
                             Console.ForegroundColor = ConsoleColor.White;
                             //Console.ReadKey(true);
-                            cserekSzama++;
+                            cserelendoLapSzam--;
                             break;
                         default:
                             // Do nothing...
@@ -499,7 +497,8 @@ namespace Angen
                 Megjelenito.AddEvent(kartyaKijatszosEvent);
                 Megjelenito.Takaritas();
                 Megjelenito.HeaderRajzolas(Adu);
-                AI.KartyakatMutat();
+                //AI.KartyakatMutat();
+                Thread.Sleep(750);
                 return true;
             }
             else
@@ -508,7 +507,8 @@ namespace Angen
                 Megjelenito.AddEvent(ervenytelenLepesString);
                 Megjelenito.Takaritas();
                 Megjelenito.HeaderRajzolas(Adu);
-                AI.KartyakatMutat();
+                //AI.KartyakatMutat();
+                Thread.Sleep(750);
                 return false;
             }
 
@@ -523,6 +523,7 @@ namespace Angen
                 if (kihivo.VanAdottSzinuKartyaja(Adu.Szin))
                 {
                     Megjelenito.AddEventEsUjrarajzol(String.Format("{0} a kihívó, és most már elvileg van aduval megegyező szín a kezében!\n", kihivo.Nev), Adu);
+                    Thread.Sleep(750);
                     return;
                 }
                 else
